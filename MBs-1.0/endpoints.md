@@ -3,11 +3,34 @@
 ## GET /
 ### Response 200
 #### body
-- "supported_standard_versions": "LIST_MBs-X.X"
-- "provider_idintificator": "SERVICE_NAME"
-- "provider_repositore": "LINK_TO_PROVIDER_GITHUB_REPOSITORY"
+- "supported_standard_versions": ["MBs-X.X"]
+- "provider_identifier": "SERVICE_NAME"
+- "provider_repository": "LINK_TO_PROVIDER_GITHUB_REPOSITORY"
 
-## GET /search?text=DATA
+## GET /v1.0/
+
+#### Headers: 
+- "Authorization": "TOKEN"
+
+### Response 200
+#### body
+
+- "premium": Boolean
+- "logo": "IMAGE_URL"
+- "colors": {    
+        "foreground": "HEX_COLOR",  
+        "background": "HEX_COLOR",  
+        "highlight": "HEX_COLOR"  
+    }
+
+## GET /v1.0/auth
+
+### Response 200
+#### body
+
+- "auth_url": "URL"
+
+## GET /v1.0/search?text=DATA
 ### Request
 
 #### Query parameters: 
@@ -23,38 +46,47 @@
     "track_id": "TRACK_ID",  
     "track_title": "TRACK_TITLE",  
     "artist": {  
-            "id": "ARTIST_ID",  
-            "name": "ARTIST_NAME"  
-            }, 
+        "id": "ARTIST_ID",  
+        "name": "ARTIST_NAME"  
+    }, 
     "album": {  
         "id": "ALBUM_ID",  
-        "name": "ALBUM_NAME"  
+        "name": "ALBUM_NAME",  
+        "logo": "IMAGE_URL"  
     },   
-    "icon": "IMAGE_URL"  
-    "lyrics": "NONE_OR_TEXT_OR_LRC"
+    "lyrics": ("NONE", "TEXT", "LRC"),  
+    "warnings": ["NONE", "EXPLICIT", "REGION"]  
     } ... ]
 
 ### Response 403
-Not valid token
+#### body
+- "error": "invalid_token"
+- "message": "Authorization token is invalid or expired"
 
-## GET /lyrics?track=TRACK_ID&type=TEXT_OR_LRC
+## GET /v1.0/lyrics?track=TRACK_ID&type=TEXT_OR_LRC
 #### Query parameters: 
 - "track": "TRACK_ID"
-- "type": "TYPE_OF_LYRICS"
+- "type": ("TEXT", "LRC")
 
 #### Headers: 
 - "Authorization": "TOKEN"
 
 ### Response 200
 #### body
-- {  
-    "type": "TEXT / LRC",  
-    "data": "LYRICS_CONTENT"  
-    }
+- "type": ("TEXT", "LRC")  
+- "data": "LYRICS_CONTENT"  
+
+### Response 403
+#### body
+- "error": "invalid_token"
+- "message": "Authorization token is invalid or expired"
 
 ### Response 404
-Track doesn't contain lyrics  
+#### body
+- "error": "no_found"
+- "message": "Track doesn't contain lyrics"
 
-### Response 405
-ONLY IF LRC  
-Track contain TEXT lyrics, but not contain LRC
+### Response 422
+#### body
+- "error": "no_found_by_type"
+- "message": "Track contain TEXT lyrics, but not contain LRC"
