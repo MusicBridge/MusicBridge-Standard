@@ -6,6 +6,8 @@
 - "supported_standard_versions": ["MBs-X.X"]
 - "provider_identifier": "SERVICE_NAME"
 - "provider_repository": "LINK_TO_PROVIDER_GITHUB_REPOSITORY"
+- "logo": "IMAGE_URL"
+- "color": "HEX_COLOR"
 
 ## GET /v1.0/
 
@@ -16,12 +18,11 @@
 #### body
 
 - "premium": Boolean
-- "logo": "IMAGE_URL"
-- "colors": {    
-        "foreground": "HEX_COLOR",  
-        "background": "HEX_COLOR",  
-        "highlight": "HEX_COLOR"  
-    }
+
+### Response 401
+*Bad or empty token*
+#### body
+- "detail": "Bad Token"
 
 ## GET /v1.0/auth
 
@@ -30,11 +31,11 @@
 
 - "auth_url": "URL"
 
-## GET /v1.0/search?text=DATA
+## GET /v1.0/search/%DATA%
 ### Request
 
-#### Query parameters: 
-- "text": "SEARCH_TEXT"
+#### Parameters: 
+- %DATA%: "SEARCH_TEXT OR trackId:TRACK_ID"
 
 #### Headers: 
 - "Authorization": "TOKEN"
@@ -42,51 +43,64 @@
 ### Response 200
 
 #### body
-- "results": [{  
-    "track_id": "TRACK_ID",  
-    "track_title": "TRACK_TITLE",  
+- [{  
+    "id": "TRACK_ID",  
+    "title": "TRACK_TITLE",  
+    "url": "TRACK_URL",
     "artist": {  
         "id": "ARTIST_ID",  
+        "url": "ARTIST_URL",
         "name": "ARTIST_NAME"  
     }, 
     "album": {  
         "id": "ALBUM_ID",  
+        "url": "ALBUM_URL",
         "name": "ALBUM_NAME",  
         "logo": "IMAGE_URL"  
     },   
-    "lyrics": ("NONE", "TEXT", "LRC"),  
-    "warnings": ["NONE", "EXPLICIT", "REGION"]  
+    "lyrics": {
+        "text": Boolean,
+        "lrc": Boolean
+    },  
+    "explicit": False,
     } ... ]
 
-### Response 403
+### Response 401
+*Bad or empty token*
 #### body
-- "error": "invalid_token"
-- "message": "Authorization token is invalid or expired"
+- "detail": "Bad Token"
 
-## GET /v1.0/lyrics?track=TRACK_ID&type=TEXT_OR_LRC
-#### Query parameters: 
-- "track": "TRACK_ID"
-- "type": ("TEXT", "LRC")
+## GET /v1.0/lyrics/%TYPE%/%TRACK_ID%
+#### Parameters: 
+- "%TYPE%": "TEXT/LRC"
+- "%TRACK_ID%": "TRACK_ID"
 
 #### Headers: 
 - "Authorization": "TOKEN"
 
 ### Response 200
 #### body
-- "type": ("TEXT", "LRC")  
-- "data": "LYRICS_CONTENT"  
+- {  
+    "type": "TEXT/LRC"
+    "lyrics": "LYRICS"
+    }
+
+### Response 401
+*Bad or empty token*
+#### body
+- "detail": "Bad Token"
 
 ### Response 403
+*Premium subscription required*
 #### body
-- "error": "invalid_token"
-- "message": "Authorization token is invalid or expired"
+- "detail": "Premium subscription required"
 
 ### Response 404
+*Bad or empty track id*
 #### body
-- "error": "no_found"
-- "message": "Track doesn't contain lyrics"
+- "detail": "Track not found"
 
-### Response 422
+### Response 405
+*This lyrics type are not avaliable*
 #### body
-- "error": "no_found_by_type"
-- "message": "Track contain TEXT lyrics, but not contain LRC"
+- "detail": "This lyrics type are not avaliable"
