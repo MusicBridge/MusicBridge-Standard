@@ -104,3 +104,14 @@
 *This lyrics type are not avaliable*
 #### body
 - "detail": "This lyrics type are not avaliable"
+
+## GET /v1.0/download/%TRACK_ID%
+#### Parameters: 
+- "%TRACK_ID%": "TRACK_ID"
+
+#### Headers: 
+- "Authorization": "TOKEN"
+
+### Response 200
+#### body
+- FILE
